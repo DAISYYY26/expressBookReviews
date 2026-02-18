@@ -88,5 +88,26 @@ public_users.get('/review/:isbn', function (req, res) {
         return res.status(404).json({ message: "No reviews found for this ISBN" });
     }
 });
+// --- Add a review for a book by ISBN ---
+public_users.post('/review/:isbn', (req, res) => {
+    const isbn = req.params.isbn;
+    const { username, review } = req.body;
+
+    if (!username || !review) {
+        return res.status(400).json({ message: "Username and review are required" });
+    }
+
+    if (!books[isbn]) {
+        return res.status(404).json({ message: "Book not found" });
+    }
+
+    // Add the review
+    books[isbn].reviews[username] = review;
+
+    return res.status(200).json({
+        message: `Review added/updated successfully for ISBN ${isbn}`,
+        reviews: books[isbn].reviews
+    });
+});
 
 module.exports.general = public_users;
